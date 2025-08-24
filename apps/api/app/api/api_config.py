@@ -1,6 +1,6 @@
 """
 API Configuration REST Endpoints
-国产AI大模型配置管理的REST API
+REST API for Domestic AI Model Configuration Management
 """
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -46,7 +46,7 @@ async def get_all_providers_config(
     project_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    """获取所有提供商的配置"""
+    """Get configuration for all providers"""
     try:
         config_manager = get_config_manager(db)
         providers_config = config_manager.get_all_providers_config(project_id)
@@ -62,9 +62,9 @@ async def get_provider_config(
     project_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    """获取特定提供商的配置"""
+    """Get configuration for a specific provider"""
     try:
-        # 验证提供商
+        # Validate provider
         try:
             model_provider = ModelProvider(provider)
         except ValueError:
@@ -86,9 +86,9 @@ async def set_api_key(
     project_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    """设置API密钥"""
+    """Set API key"""
     try:
-        # 验证提供商
+        # Validate provider
         try:
             model_provider = ModelProvider(request.provider)
         except ValueError:
@@ -96,7 +96,7 @@ async def set_api_key(
         
         config_manager = get_config_manager(db)
         
-        # 如果是项目级别的设置，需要项目ID
+        # If it's a project-level setting, project ID is required
         if request.scope == "project" and not project_id:
             raise HTTPException(status_code=400, detail="Project ID is required for project-level API key")
         
@@ -129,9 +129,9 @@ async def validate_api_key(
     request: APIKeyValidationRequest,
     db: Session = Depends(get_db)
 ):
-    """验证API密钥"""
+    """Validate API key"""
     try:
-        # 验证提供商
+        # Validate provider
         try:
             model_provider = ModelProvider(request.provider)
         except ValueError:
@@ -167,9 +167,9 @@ async def check_api_key_status(
     project_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    """检查API密钥状态"""
+    """Check API key status"""
     try:
-        # 验证提供商
+        # Validate provider
         try:
             model_provider = ModelProvider(provider)
         except ValueError:
@@ -197,9 +197,9 @@ async def remove_api_key(
     scope: str = "global",
     db: Session = Depends(get_db)
 ):
-    """删除API密钥"""
+    """Remove API key"""
     try:
-        # 验证提供商
+        # Validate provider
         try:
             model_provider = ModelProvider(provider)
         except ValueError:
@@ -208,7 +208,7 @@ async def remove_api_key(
         config_manager = get_config_manager(db)
         
         if scope == "project" and project_id:
-            # 删除项目级别的API密钥
+            # Remove project-level API key
             from app.models.env_vars import EnvVar
             from app.services.adapters import get_provider_models
             
@@ -224,7 +224,7 @@ async def remove_api_key(
                     db.delete(env_var)
                     db.commit()
         else:
-            # 删除全局环境变量（从操作系统环境变量中移除）
+            # Remove global environment variable (remove from OS environment variables)
             from app.services.adapters import get_provider_models
             import os
             

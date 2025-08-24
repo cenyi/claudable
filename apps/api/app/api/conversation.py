@@ -1,6 +1,6 @@
 """
 Conversation Management API
-国产AI模型的对话历史管理
+Conversation History Management for Domestic AI Models
 """
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -29,7 +29,7 @@ class ConversationClearResponse(BaseModel):
 
 
 def get_api_adapter_cli(provider: ModelProvider, db: Session):
-    """获取API适配器CLI实例"""
+    """Get API adapter CLI instance"""
     from app.services.cli.api_adapter_cli import APIAdapterCLI
     return APIAdapterCLI(provider, db)
 
@@ -40,14 +40,14 @@ async def get_conversation_summary(
     provider: str,
     db: Session = Depends(get_db)
 ) -> ConversationSummaryResponse:
-    """获取对话历史摘要"""
+    """Get conversation history summary"""
     
-    # 验证项目存在
+    # Validate project exists
     project = db.get(ProjectModel, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
-    # 验证提供商
+    # Validate provider
     try:
         model_provider = ModelProvider(provider)
     except ValueError:
@@ -69,14 +69,14 @@ async def clear_conversation_history(
     provider: str,
     db: Session = Depends(get_db)
 ) -> ConversationClearResponse:
-    """清空对话历史"""
+    """Clear conversation history"""
     
-    # 验证项目存在
+    # Validate project exists
     project = db.get(ProjectModel, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
-    # 验证提供商
+    # Validate provider
     try:
         model_provider = ModelProvider(provider)
     except ValueError:
@@ -100,9 +100,9 @@ async def get_active_providers(
     project_id: str,
     db: Session = Depends(get_db)
 ) -> Dict[str, Dict[str, Any]]:
-    """获取项目中活跃的AI提供商及其对话状态"""
+    """Get active AI providers and their conversation status for the project"""
     
-    # 验证项目存在
+    # Validate project exists
     project = db.get(ProjectModel, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -136,9 +136,9 @@ async def get_conversation_stats(
     project_id: str,
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
-    """获取对话统计信息（包含tokens使用情况）"""
+    """Get conversation statistics (including token usage)"""
     
-    # 验证项目存在
+    # Validate project exists
     project = db.get(ProjectModel, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -151,12 +151,12 @@ async def get_conversation_stats(
                 cli = get_api_adapter_cli(provider, db)
                 summary = cli.get_conversation_summary(project_id)
                 
-                # 估算tokens使用情况
+                # Estimate token usage
                 if cli.conversation_manager and summary["total_messages"] > 0:
                     conversation = cli.conversation_manager.load_conversation(project_id, provider)
                     estimated_tokens = sum(cli.conversation_manager.count_tokens(msg.content) for msg in conversation)
                     
-                    # 获取模型配置
+                    # Get model configuration
                     from app.services.adapters import get_provider_models
                     models = get_provider_models(provider)
                     context_window = models[0].context_window if models else 4096
@@ -169,7 +169,7 @@ async def get_conversation_stats(
                         "estimated_tokens": estimated_tokens,
                         "context_window": context_window,
                         "usage_percentage": min(usage_percentage, 100),
-                        "optimization_applied": usage_percentage > 70,  # 假设70%以上就会优化
+                        "optimization_applied": usage_percentage > 70,  # Assume optimization when over 70%
                         "last_optimization": datetime.utcnow().isoformat() if usage_percentage > 70 else None
                     })
                 else:
@@ -184,7 +184,7 @@ async def get_conversation_stats(
                     })
                     
             except Exception as e:
-                # 如果某个provider失败，继续处理其他
+                # Continue processing other providers if one fails
                 continue
         
         return {
@@ -202,9 +202,9 @@ async def reset_all_conversations(
     project_id: str,
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
-    """重置项目中所有AI提供商的对话历史"""
+    """Reset conversation history for all AI providers in the project"""
     
-    # 验证项目存在
+    # Validate project exists
     project = db.get(ProjectModel, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")

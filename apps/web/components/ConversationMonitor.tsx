@@ -1,6 +1,6 @@
 """
-对话历史实时监控面板
-显示token使用情况、上下文窗口状态和智能优化信息
+Real-time Conversation History Monitoring Panel
+Displays token usage, context window status, and intelligent optimization information
 """
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -36,8 +36,8 @@ export default function ConversationMonitor({
     if (projectId) {
       loadConversationStats();
       
-      // 设置定期刷新
-      const interval = setInterval(loadConversationStats, 30000); // 30秒刷新一次
+      // Set up periodic refresh
+      const interval = setInterval(loadConversationStats, 30000); // Refresh every 30 seconds
       setRefreshInterval(interval);
       
       return () => {
@@ -79,9 +79,9 @@ export default function ConversationMonitor({
   const getProviderDisplayName = (provider: string) => {
     const names: { [key: string]: string } = {
       deepseek: 'DeepSeek',
-      qwen: '通义千问',
+      qwen: 'Qwen',
       kimi: 'Kimi',
-      doubao: '豆包'
+      doubao: 'Doubao'
     };
     return names[provider] || provider;
   };
@@ -103,12 +103,12 @@ export default function ConversationMonitor({
   return (
     <div className={`${className}`}>
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-        {/* 标题栏 */}
+        {/* Title bar */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-              对话状态监控
+              Conversation Status Monitor
             </h3>
           </div>
           
@@ -116,33 +116,33 @@ export default function ConversationMonitor({
             onClick={() => setIsVisible(!isVisible)}
             className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           >
-            {isVisible ? '隐藏详情' : '显示详情'}
+            {isVisible ? 'Hide Details' : 'Show Details'}
           </button>
         </div>
 
-        {/* 概览信息 */}
+        {/* Overview */}
         <div className="grid grid-cols-3 gap-3 mb-4">
           <div className="text-center">
             <div className="text-lg font-semibold text-gray-900 dark:text-white">
               {stats.filter(s => s.total_messages > 0).length}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">活跃模型</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Active Models</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-semibold text-gray-900 dark:text-white">
               {formatNumber(stats.reduce((sum, s) => sum + s.estimated_tokens, 0))}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">总Tokens</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Total Tokens</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-semibold text-gray-900 dark:text-white">
               {Math.max(...stats.map(s => s.usage_percentage)).toFixed(0)}%
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">最高使用率</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Max Usage</div>
           </div>
         </div>
 
-        {/* 详细信息 */}
+        {/* Detailed information */}
         {isVisible && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -167,7 +167,7 @@ export default function ConversationMonitor({
                     </span>
                     {stat.optimization_applied && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
-                        ✨ 已优化
+                        ✨ Optimized
                       </span>
                     )}
                   </div>
@@ -182,7 +182,7 @@ export default function ConversationMonitor({
                   </div>
                 </div>
                 
-                {/* 进度条 */}
+                {/* Progress bar */}
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                   <div
                     className={`h-1.5 rounded-full ${getUsageBarColor(stat.usage_percentage)} transition-all duration-300`}
@@ -191,9 +191,9 @@ export default function ConversationMonitor({
                 </div>
                 
                 <div className="mt-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                  <span>{stat.total_messages} 条消息</span>
+                  <span>{stat.total_messages} messages</span>
                   {stat.last_optimization && (
-                    <span>优化于 {new Date(stat.last_optimization).toLocaleTimeString()}</span>
+                    <span>Optimized at {new Date(stat.last_optimization).toLocaleTimeString()}</span>
                   )}
                 </div>
               </div>
@@ -201,7 +201,7 @@ export default function ConversationMonitor({
           </motion.div>
         )}
 
-        {/* 智能提示 */}
+        {/* Smart tips */}
         {stats.some(s => s.usage_percentage > 80) && (
           <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
             <div className="flex items-start gap-2">
@@ -210,10 +210,10 @@ export default function ConversationMonitor({
               </svg>
               <div>
                 <div className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                  上下文使用率较高
+                  High Context Usage
                 </div>
                 <div className="text-xs text-amber-700 dark:text-amber-300 mt-1">
-                  系统已自动优化对话历史，保持最相关的内容。如需要，您可以手动清空部分对话历史。
+                  The system has automatically optimized the conversation history to retain the most relevant content. If needed, you can manually clear part of the conversation history.
                 </div>
               </div>
             </div>

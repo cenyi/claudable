@@ -1,6 +1,6 @@
 """
 Kimi (Moonshot AI) API Adapter
-支持月之暗面Kimi系列模型的API适配器
+API adapter supporting Moonshot AI Kimi series models
 """
 import json
 import uuid
@@ -11,14 +11,14 @@ from .base_adapter import BaseAPIAdapter, ModelProvider, ModelConfig, APIMessage
 
 
 class KimiAdapter(BaseAPIAdapter):
-    """Kimi API适配器"""
+    """Kimi API Adapter"""
     
     def __init__(self, config: ModelConfig, api_key: str):
         super().__init__(config, api_key)
         self.base_url = config.api_endpoint or "https://api.moonshot.cn/v1"
     
     async def validate_api_key(self) -> bool:
-        """验证API密钥是否有效"""
+        """Validate if the API key is valid"""
         try:
             response = await self._make_request(
                 "GET",
@@ -29,7 +29,7 @@ class KimiAdapter(BaseAPIAdapter):
             return False
     
     async def get_available_models(self) -> List[str]:
-        """获取可用的模型列表"""
+        """Get list of available models"""
         try:
             response = await self._make_request(
                 "GET",
@@ -50,7 +50,7 @@ class KimiAdapter(BaseAPIAdapter):
         max_tokens: Optional[int] = None,
         stream: bool = False
     ) -> AsyncGenerator[APIResponse, None]:
-        """聊天补全，支持流式响应"""
+        """Chat completion with streaming support"""
         
         payload = self._prepare_request_payload(
             messages=messages,
@@ -77,7 +77,7 @@ class KimiAdapter(BaseAPIAdapter):
             yield error_response
     
     async def _single_completion(self, payload: Dict[str, Any]) -> APIResponse:
-        """非流式补全"""
+        """Non-streaming completion"""
         response = await self._make_request(
             "POST",
             f"{self.base_url}/chat/completions",
@@ -89,7 +89,7 @@ class KimiAdapter(BaseAPIAdapter):
         return self._parse_response(data)
     
     async def _stream_completion(self, payload: Dict[str, Any]) -> AsyncGenerator[APIResponse, None]:
-        """流式补全"""
+        """Streaming completion"""
         async with self.client.stream(
             "POST",
             f"{self.base_url}/chat/completions",
@@ -117,9 +117,9 @@ class KimiAdapter(BaseAPIAdapter):
         model: Optional[str] = None,
         **kwargs
     ) -> Dict[str, Any]:
-        """准备API请求载荷"""
+        """Prepare API request payload"""
         
-        # 转换消息格式
+        # Convert message format
         formatted_messages = []
         for msg in messages:
             formatted_msg = {
@@ -140,7 +140,7 @@ class KimiAdapter(BaseAPIAdapter):
         return payload
     
     def _parse_response(self, response_data: Dict[str, Any]) -> APIResponse:
-        """解析API响应"""
+        """Parse API response"""
         choice = response_data["choices"][0]
         message = choice["message"]
         
@@ -154,7 +154,7 @@ class KimiAdapter(BaseAPIAdapter):
         )
     
     def _parse_stream_chunk(self, chunk: str) -> Optional[APIResponse]:
-        """解析流式响应块"""
+        """Parse streaming response chunk"""
         try:
             data = json.loads(chunk)
             
@@ -177,7 +177,7 @@ class KimiAdapter(BaseAPIAdapter):
             return None
     
     def _get_headers(self) -> Dict[str, str]:
-        """获取请求头"""
+        """Get request headers"""
         return {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
@@ -185,6 +185,6 @@ class KimiAdapter(BaseAPIAdapter):
         }
 
 
-# 注册Kimi适配器
+# Register Kimi adapter
 from .base_adapter import AdapterFactory
 AdapterFactory.register_adapter(ModelProvider.KIMI, KimiAdapter)

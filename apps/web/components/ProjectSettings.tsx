@@ -55,64 +55,64 @@ const CLI_OPTIONS: CLIOption[] = [
     id: 'deepseek',
     name: 'DeepSeek',
     icon: '🔍',
-    description: '深度求索代码模型，专业代码生成',
+    description: 'DeepSeek, professional code generation',
     color: 'from-blue-500 to-indigo-600',
-    checkCommand: 'API模式，无需安装CLI',
+    checkCommand: 'API mode, no CLI installation required',
     downloadUrl: 'https://api.deepseek.com',
-    installCommand: '设置DEEPSEEK_API_KEY环境变量',
+    installCommand: 'Set DEEPSEEK_API_KEY environment variable',
     models: [
-      { id: 'deepseek-coder', name: 'DeepSeek Coder', description: '专业代码生成模型' },
-      { id: 'deepseek-chat', name: 'DeepSeek Chat', description: '通用对话模型' }
+      { id: 'deepseek-coder', name: 'DeepSeek Coder', description: 'Professional code generation model' },
+      { id: 'deepseek-chat', name: 'DeepSeek Chat', description: 'General conversation model' }
     ],
-    features: ['代码生成', 'API调用', '高性价比']
+    features: ['Code generation', 'API calls', 'High cost-performance']
   },
   {
     id: 'qwen',
     name: 'Qwen',
     icon: '🐉',
-    description: '阿里云通义千问，强大的中文理解',
+    description: 'Alibaba Cloud Qwen, powerful Chinese understanding',
     color: 'from-red-500 to-pink-600',
-    checkCommand: 'API模式，无需安装CLI',
+    checkCommand: 'API mode, no CLI installation required',
     downloadUrl: 'https://dashscope.aliyuncs.com',
-    installCommand: '设置QWEN_API_KEY环境变量',
+    installCommand: 'Set QWEN_API_KEY environment variable',
     models: [
-      { id: 'qwen-max', name: '通义千问-Max', description: '最强大的通用模型' },
-      { id: 'qwen-plus', name: '通义千问-Plus', description: '平衡性能和成本' },
-      { id: 'qwen2.5-coder-32b-instruct', name: '通义千问-Coder', description: '专业代码生成' }
+      { id: 'qwen-max', name: 'Qwen-Max', description: 'Most powerful general model' },
+      { id: 'qwen-plus', name: 'Qwen-Plus', description: 'Balanced performance and cost' },
+      { id: 'qwen2.5-coder-32b-instruct', name: 'Qwen-Coder', description: 'Professional code generation' }
     ],
-    features: ['中文优化', '多模态', '代码生成']
+    features: ['Chinese optimization', 'Multimodal', 'Code generation']
   },
   {
     id: 'kimi',
     name: 'Kimi',
     icon: '🌙',
-    description: '月之暗面Kimi，超长上下文窗口',
+    description: 'Moonshot AI Kimi, ultra-long context window',
     color: 'from-purple-500 to-violet-600',
-    checkCommand: 'API模式，无需安装CLI',
+    checkCommand: 'API mode, no CLI installation required',
     downloadUrl: 'https://api.moonshot.cn',
-    installCommand: '设置KIMI_API_KEY环境变量',
+    installCommand: 'Set KIMI_API_KEY environment variable',
     models: [
-      { id: 'moonshot-v1-8k', name: 'Kimi K2 8K', description: '8K上下文窗口' },
-      { id: 'moonshot-v1-32k', name: 'Kimi K2 32K', description: '32K上下文窗口' },
-      { id: 'moonshot-v1-128k', name: 'Kimi K2 128K', description: '128K上下文窗口' }
+      { id: 'moonshot-v1-8k', name: 'Kimi K2 8K', description: '8K context window' },
+      { id: 'moonshot-v1-32k', name: 'Kimi K2 32K', description: '32K context window' },
+      { id: 'moonshot-v1-128k', name: 'Kimi K2 128K', description: '128K context window' }
     ],
-    features: ['超长上下文', '中文优化', '文档理解']
+    features: ['Ultra-long context', 'Chinese optimization', 'Document understanding']
   },
   {
     id: 'doubao',
     name: 'Doubao',
     icon: '🫘',
-    description: '字节跳动豆包，高效智能助手',
+    description: 'ByteDance Doubao, efficient intelligent assistant',
     color: 'from-green-500 to-teal-600',
-    checkCommand: 'API模式，无需安装CLI',
+    checkCommand: 'API mode, no CLI installation required',
     downloadUrl: 'https://www.volcengine.com/product/doubao',
-    installCommand: '设置DOUBAO_API_KEY环境变量',
+    installCommand: 'Set DOUBAO_API_KEY environment variable',
     models: [
-      { id: 'ep-20241224053255-w6rj2', name: '豆包 Seed', description: '豆包基础模型' },
-      { id: 'doubao-pro-4k', name: '豆包 Pro 4K', description: '4K上下文窗口' },
-      { id: 'doubao-pro-32k', name: '豆包 Pro 32K', description: '32K上下文窗口' }
+      { id: 'ep-20241224053255-w6rj2', name: 'Doubao Seed', description: 'Doubao base model' },
+      { id: 'doubao-pro-4k', name: 'Doubao Pro 4K', description: '4K context window' },
+      { id: 'doubao-pro-32k', name: 'Doubao Pro 32K', description: '32K context window' }
     ],
-    features: ['高效推理', '中文优化', '多场景应用']
+    features: ['Efficient reasoning', 'Chinese optimization', 'Multi-scenario application']
   },
 ];
 

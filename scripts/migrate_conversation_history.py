@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-数据库迁移脚本 - 添加对话历史表
-支持国产AI模型的持久化对话历史存储
+Database Migration Script - Add Conversation History Table
+Persistent conversation history storage supporting domestic AI models
 """
 import sys
 import os
@@ -14,16 +14,16 @@ from app.models.conversation_history import ConversationHistoryModel
 
 
 def create_conversation_history_table():
-    """创建对话历史表"""
+    """Create conversation history table"""
     engine = create_engine(settings.DATABASE_URL)
     
     try:
-        # 创建表
+        # Create table
         Base.metadata.create_all(bind=engine, tables=[ConversationHistoryModel.__table__])
         
         print("✅ Successfully created conversation_history table")
         
-        # 验证表是否创建成功
+        # Verify table creation
         with engine.connect() as conn:
             result = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table' AND name='conversation_history'"))
             if result.fetchone():

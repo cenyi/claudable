@@ -1,6 +1,6 @@
 """
 Base API Adapter for Multi-Model Support
-支持多种AI大模型的统一适配器基类
+Unified Base Adapter Class Supporting Multiple AI Models
 """
 import asyncio
 import json
@@ -14,7 +14,7 @@ from pydantic import BaseModel
 
 
 class ModelProvider(str, Enum):
-    """支持的模型提供商"""
+    """Supported Model Providers"""
     CLAUDE = "claude"
     CURSOR = "cursor"
     DEEPSEEK = "deepseek"
@@ -24,7 +24,7 @@ class ModelProvider(str, Enum):
 
 
 class ModelConfig(BaseModel):
-    """模型配置"""
+    """Model Configuration"""
     provider: ModelProvider
     model_id: str
     display_name: str
@@ -36,18 +36,18 @@ class ModelConfig(BaseModel):
     supports_streaming: bool = True
     supports_images: bool = False
     api_endpoint: Optional[str] = None
-    api_key_env: str  # 环境变量名，如 "DEEPSEEK_API_KEY"
+    api_key_env: str  # Environment variable name, e.g. "DEEPSEEK_API_KEY"
 
 
 class APIMessage(BaseModel):
-    """统一的API消息格式"""
+    """Unified API Message Format"""
     role: str  # "system", "user", "assistant"
     content: str
-    images: Optional[List[str]] = None  # base64编码的图片
+    images: Optional[List[str]] = None  # Base64 encoded images
 
 
 class APIResponse(BaseModel):
-    """统一的API响应格式"""
+    """Unified API Response Format"""
     message_id: str
     content: str
     role: str = "assistant"
@@ -57,7 +57,7 @@ class APIResponse(BaseModel):
 
 
 class BaseAPIAdapter(ABC):
-    """API适配器基类"""
+    """Base API Adapter Class"""
     
     def __init__(self, config: ModelConfig, api_key: str):
         self.config = config
@@ -72,12 +72,12 @@ class BaseAPIAdapter(ABC):
     
     @abstractmethod
     async def validate_api_key(self) -> bool:
-        """验证API密钥是否有效"""
+        """Validate if the API key is valid"""
         pass
     
     @abstractmethod
     async def get_available_models(self) -> List[str]:
-        """获取可用的模型列表"""
+        """Get list of available models"""
         pass
     
     @abstractmethod
@@ -89,7 +89,7 @@ class BaseAPIAdapter(ABC):
         max_tokens: Optional[int] = None,
         stream: bool = False
     ) -> AsyncGenerator[APIResponse, None]:
-        """聊天补全，支持流式响应"""
+        """Chat completion with streaming support"""
         pass
     
     @abstractmethod
@@ -99,21 +99,21 @@ class BaseAPIAdapter(ABC):
         model: Optional[str] = None,
         **kwargs
     ) -> Dict[str, Any]:
-        """准备API请求载荷"""
+        """Prepare API request payload"""
         pass
     
     @abstractmethod
     def _parse_response(self, response_data: Dict[str, Any]) -> APIResponse:
-        """解析API响应"""
+        """Parse API response"""
         pass
     
     @abstractmethod
     def _parse_stream_chunk(self, chunk: str) -> Optional[APIResponse]:
-        """解析流式响应块"""
+        """Parse streaming response chunk"""
         pass
     
     def _get_headers(self) -> Dict[str, str]:
-        """获取请求头"""
+        """Get request headers"""
         return {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
@@ -125,7 +125,7 @@ class BaseAPIAdapter(ABC):
         url: str,
         **kwargs
     ) -> httpx.Response:
-        """发起HTTP请求"""
+        """Make HTTP request"""
         headers = self._get_headers()
         return await self.client.request(
             method=method,
@@ -135,7 +135,7 @@ class BaseAPIAdapter(ABC):
         )
     
     def normalize_role(self, role: str) -> str:
-        """标准化角色名称"""
+        """Normalize role name"""
         role_mapping = {
             "model": "assistant",
             "ai": "assistant",
@@ -146,18 +146,18 @@ class BaseAPIAdapter(ABC):
         return role_mapping.get(role.lower(), role.lower())
     
     def format_error_message(self, error: Exception, context: str = "") -> str:
-        """格式化错误消息"""
+        """Format error message"""
         return f"[{self.config.provider.value.upper()}] {context}: {str(error)}"
 
 
 class AdapterFactory:
-    """适配器工厂类"""
+    """Adapter Factory Class"""
     
     _adapters: Dict[ModelProvider, type] = {}
     
     @classmethod
     def register_adapter(cls, provider: ModelProvider, adapter_class: type):
-        """注册适配器"""
+        """Register adapter"""
         cls._adapters[provider] = adapter_class
     
     @classmethod
@@ -167,7 +167,7 @@ class AdapterFactory:
         config: ModelConfig,
         api_key: str
     ) -> BaseAPIAdapter:
-        """创建适配器实例"""
+        """Create adapter instance"""
         if provider not in cls._adapters:
             raise ValueError(f"Unsupported provider: {provider}")
         
@@ -176,19 +176,19 @@ class AdapterFactory:
     
     @classmethod
     def get_supported_providers(cls) -> List[ModelProvider]:
-        """获取支持的提供商列表"""
+        """Get list of supported providers"""
         return list(cls._adapters.keys())
 
 
-# 预定义的模型配置
+# Predefined model configurations
 PREDEFINED_MODELS = {
-    # DeepSeek 模型
+    # DeepSeek Models
     ModelProvider.DEEPSEEK: [
         ModelConfig(
             provider=ModelProvider.DEEPSEEK,
             model_id="deepseek-coder",
             display_name="DeepSeek Coder",
-            description="专业的代码生成模型",
+            description="Professional code generation model",
             max_tokens=4096,
             context_window=16384,
             api_endpoint="https://api.deepseek.com/v1/chat/completions",
@@ -198,7 +198,7 @@ PREDEFINED_MODELS = {
             provider=ModelProvider.DEEPSEEK,
             model_id="deepseek-chat",
             display_name="DeepSeek Chat",
-            description="通用对话模型",
+            description="General conversation model",
             max_tokens=4096,
             context_window=16384,
             api_endpoint="https://api.deepseek.com/v1/chat/completions",
@@ -206,13 +206,13 @@ PREDEFINED_MODELS = {
         )
     ],
     
-    # 通义千问模型
+    # Qwen Models
     ModelProvider.QWEN: [
         ModelConfig(
             provider=ModelProvider.QWEN,
             model_id="qwen-max",
-            display_name="通义千问-Max",
-            description="最强大的通用模型",
+            display_name="Qwen-Max",
+            description="Most powerful general model",
             max_tokens=2048,
             context_window=8192,
             api_endpoint="https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation",
@@ -221,8 +221,8 @@ PREDEFINED_MODELS = {
         ModelConfig(
             provider=ModelProvider.QWEN,
             model_id="qwen-plus",
-            display_name="通义千问-Plus",
-            description="平衡性能和成本的模型",
+            display_name="Qwen-Plus",
+            description="Balanced performance and cost model",
             max_tokens=2048,
             context_window=8192,
             api_endpoint="https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation",
@@ -231,8 +231,8 @@ PREDEFINED_MODELS = {
         ModelConfig(
             provider=ModelProvider.QWEN,
             model_id="qwen2.5-coder-32b-instruct",
-            display_name="通义千问-Coder",
-            description="专业代码生成模型",
+            display_name="Qwen-Coder",
+            description="Professional code generation model",
             max_tokens=4096,
             context_window=32768,
             api_endpoint="https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation",
@@ -240,13 +240,13 @@ PREDEFINED_MODELS = {
         )
     ],
     
-    # Kimi 模型
+    # Kimi Models
     ModelProvider.KIMI: [
         ModelConfig(
             provider=ModelProvider.KIMI,
             model_id="moonshot-v1-8k",
             display_name="Kimi K2 8K",
-            description="8K上下文窗口",
+            description="8K context window",
             max_tokens=4096,
             context_window=8192,
             api_endpoint="https://api.moonshot.cn/v1/chat/completions",
@@ -256,7 +256,7 @@ PREDEFINED_MODELS = {
             provider=ModelProvider.KIMI,
             model_id="moonshot-v1-32k",
             display_name="Kimi K2 32K",
-            description="32K上下文窗口",
+            description="32K context window",
             max_tokens=4096,
             context_window=32768,
             api_endpoint="https://api.moonshot.cn/v1/chat/completions",
@@ -266,7 +266,7 @@ PREDEFINED_MODELS = {
             provider=ModelProvider.KIMI,
             model_id="moonshot-v1-128k",
             display_name="Kimi K2 128K",
-            description="128K上下文窗口",
+            description="128K context window",
             max_tokens=4096,
             context_window=131072,
             api_endpoint="https://api.moonshot.cn/v1/chat/completions",
@@ -274,13 +274,13 @@ PREDEFINED_MODELS = {
         )
     ],
     
-    # 豆包模型
+    # Doubao Models
     ModelProvider.DOUBAO: [
         ModelConfig(
             provider=ModelProvider.DOUBAO,
             model_id="ep-20241224053255-w6rj2",
-            display_name="豆包 Seed",
-            description="字节跳动豆包模型",
+            display_name="Doubao Seed",
+            description="ByteDance Doubao Model",
             max_tokens=4096,
             context_window=16384,
             api_endpoint="https://ark.cn-beijing.volces.com/api/v3/chat/completions",
@@ -291,7 +291,7 @@ PREDEFINED_MODELS = {
 
 
 def get_model_config(provider: ModelProvider, model_id: str) -> Optional[ModelConfig]:
-    """获取模型配置"""
+    """Get model configuration"""
     models = PREDEFINED_MODELS.get(provider, [])
     for model in models:
         if model.model_id == model_id:
@@ -300,5 +300,5 @@ def get_model_config(provider: ModelProvider, model_id: str) -> Optional[ModelCo
 
 
 def get_provider_models(provider: ModelProvider) -> List[ModelConfig]:
-    """获取提供商的所有模型"""
+    """Get all models of a provider"""
     return PREDEFINED_MODELS.get(provider, [])

@@ -1,6 +1,6 @@
 /**
- * 会话连续性管理组件
- * 静默恢复对话历史，显示简洁的状态提示
+ * Session Continuity Management Component
+ * Silently restore conversation history and display concise status messages
  */
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -54,7 +54,7 @@ export default function SessionContinuityManager({
       if (response.ok) {
         const data: ConversationState = await response.json();
         
-        // 检查是否有活跃的对话
+        // Check if there are active conversations
         const activeProviders = Object.entries(data)
           .filter(([_, info]) => info.active && info.summary.total_messages > 0)
           .map(([provider, _]) => provider);
@@ -73,17 +73,17 @@ export default function SessionContinuityManager({
           
           setSessionInfo(sessionInfo);
           
-          // 静默恢复对话
+          // Silently restore conversation
           if (onSessionRestore) {
             onSessionRestore(sessionInfo);
           }
           
-          // 显示简洁的恢复提示
-          const providerNames = activeProviders.map(formatProviderName).join('、');
-          setStatusMessage(`已恢复与 ${providerNames} 的对话历史 (${totalMessages}条消息)`);
+          // Display concise restoration message
+          const providerNames = activeProviders.map(formatProviderName).join(', ');
+          setStatusMessage(`Restored conversation history with ${providerNames} (${totalMessages} messages)`);
           setShowStatus(true);
           
-          // 3秒后自动隐藏提示
+          // Automatically hide the message after 3 seconds
           setTimeout(() => setShowStatus(false), 3000);
           
           if (onConversationLoaded) {
@@ -108,14 +108,14 @@ export default function SessionContinuityManager({
   const formatProviderName = (provider: string) => {
     const providerNames: { [key: string]: string } = {
       deepseek: 'DeepSeek',
-      qwen: '通义千问',
+      qwen: 'Qwen',
       kimi: 'Kimi',
-      doubao: '豆包'
+      doubao: 'Doubao'
     };
     return providerNames[provider] || provider;
   };
 
-  // 加载状态显示
+  // Loading state display
   if (isLoading) {
     return (
       <div className="absolute top-4 right-4 z-50">
@@ -125,13 +125,13 @@ export default function SessionContinuityManager({
           className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-2"
         >
           <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">检查对话历史...</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">Checking conversation history...</span>
         </motion.div>
       </div>
     );
   }
 
-  // 恢复状态提示
+  // Restoration status message
   return (
     <AnimatePresence>
       {showStatus && sessionInfo && (
@@ -150,7 +150,7 @@ export default function SessionContinuityManager({
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-green-800 dark:text-green-200 mb-1">
-                  对话已恢复
+                  Conversation Restored
                 </p>
                 <p className="text-xs text-green-700 dark:text-green-300">
                   {statusMessage}

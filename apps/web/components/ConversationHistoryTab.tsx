@@ -23,9 +23,9 @@ interface ConversationHistoryTabProps {
 
 const PROVIDERS = [
   { id: 'deepseek', name: 'DeepSeek', icon: '🔍', color: 'from-blue-500 to-indigo-600' },
-  { id: 'qwen', name: '通义千问', icon: '🐉', color: 'from-red-500 to-pink-600' },
+  { id: 'qwen', name: 'Qwen', icon: '🐉', color: 'from-red-500 to-pink-600' },
   { id: 'kimi', name: 'Kimi', icon: '🌙', color: 'from-purple-500 to-violet-600' },
-  { id: 'doubao', name: '豆包', icon: '🫘', color: 'from-green-500 to-teal-600' }
+  { id: 'doubao', name: 'Doubao', icon: '🫘', color: 'from-green-500 to-teal-600' }
 ];
 
 export default function ConversationHistoryTab({ projectId }: ConversationHistoryTabProps) {
@@ -56,7 +56,7 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
   };
 
   const clearConversationHistory = async (provider: string) => {
-    const confirmed = confirm(`确定要清空 ${PROVIDERS.find(p => p.id === provider)?.name} 的对话历史吗？此操作不可撤销。`);
+    const confirmed = confirm(`Are you sure you want to clear the conversation history for ${PROVIDERS.find(p => p.id === provider)?.name}? This action cannot be undone.`);
     if (!confirmed) return;
 
     setClearingProvider(provider);
@@ -67,7 +67,7 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
 
       if (response.ok) {
         setActionStatus('success');
-        await loadProvidersInfo(); // 重新加载数据
+        await loadProvidersInfo(); // Reload data
         setTimeout(() => setActionStatus('idle'), 2000);
       } else {
         setActionStatus('error');
@@ -89,11 +89,11 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
       .filter(Boolean);
 
     if (activeProviders.length === 0) {
-      alert('没有活跃的对话历史需要清空。');
+      alert('No active conversation history to clear.');
       return;
     }
 
-    const confirmed = confirm(`确定要清空所有 ${activeProviders.length} 个模型的对话历史吗？\n\n包括：${activeProviders.join('、')}\n\n此操作不可撤销。`);
+    const confirmed = confirm(`Are you sure you want to clear conversation history for all ${activeProviders.length} models?\n\nIncluding: ${activeProviders.join(', ')}\n\nThis action cannot be undone.`);
     if (!confirmed) return;
 
     setIsLoading(true);
@@ -105,7 +105,7 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
       if (response.ok) {
         const result = await response.json();
         setActionStatus('success');
-        await loadProvidersInfo(); // 重新加载数据
+        await loadProvidersInfo(); // Reload data
         setTimeout(() => setActionStatus('idle'), 2000);
       } else {
         setActionStatus('error');
@@ -122,31 +122,31 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
 
   const formatConversationInfo = (summary: ConversationSummary | null) => {
     if (!summary || summary.total_messages === 0) {
-      return '暂无对话历史';
+      return 'No conversation history';
     }
 
-    return `${summary.total_messages} 条消息 (用户: ${summary.user_messages}, 助手: ${summary.assistant_messages})`;
+    return `${summary.total_messages} messages (User: ${summary.user_messages}, Assistant: ${summary.assistant_messages})`;
   };
 
   return (
     <div className="space-y-6">
-      {/* 头部信息 */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">对话历史管理</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Conversation History Management</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            管理国产AI模型的多轮对话历史，清空历史将开始新的对话会话
+            Manage multi-turn conversation history for domestic AI models. Clearing history will start a new conversation session.
           </p>
         </div>
 
-        {/* 全局操作按钮 */}
+        {/* Global actions */}
         <div className="flex gap-2">
           <button
             onClick={loadProvidersInfo}
             disabled={isLoading}
             className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
           >
-            {isLoading ? '刷新中...' : '刷新'}
+            {isLoading ? 'Refreshing...' : 'Refresh'}
           </button>
           
           <button
@@ -154,12 +154,12 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
             disabled={isLoading || Object.values(providersInfo).every(info => !info.active)}
             className="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            清空所有历史
+            Clear All History
           </button>
         </div>
       </div>
 
-      {/* 状态消息 */}
+      {/* Status messages */}
       {actionStatus !== 'idle' && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -171,11 +171,11 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
               : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200'
           }`}
         >
-          {actionStatus === 'success' ? '✅ 操作成功完成' : '❌ 操作失败，请重试'}
+          {actionStatus === 'success' ? '✅ Operation completed successfully' : '❌ Operation failed, please try again'}
         </motion.div>
       )}
 
-      {/* 模型列表 */}
+      {/* Model list */}
       <div className="grid gap-4">
         {PROVIDERS.map((provider) => {
           const info = providersInfo[provider.id];
@@ -197,29 +197,29 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white">{provider.name}</h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {isLoading ? '加载中...' : formatConversationInfo(info?.summary)}
+                      {isLoading ? 'Loading...' : formatConversationInfo(info?.summary)}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* 状态指示 */}
+                  {/* Status indicator */}
                   <div className={`w-2 h-2 rounded-full ${
                     info?.active ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
                   }`} />
                   
-                  {/* 清空按钮 */}
+                  {/* Clear button */}
                   <button
                     onClick={() => clearConversationHistory(provider.id)}
                     disabled={isLoading || isClearing || !info?.active}
                     className="px-3 py-1 text-sm text-red-600 dark:text-red-400 border border-red-300 dark:border-red-600 rounded hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isClearing ? '清空中...' : '清空历史'}
+                    {isClearing ? 'Clearing...' : 'Clear History'}
                   </button>
                 </div>
               </div>
 
-              {/* 详细信息 */}
+              {/* Detailed information */}
               {info?.summary && info.summary.total_messages > 0 && (
                 <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
                   <div className="grid grid-cols-3 gap-4 text-sm">
@@ -227,19 +227,19 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
                       <div className="text-lg font-medium text-gray-900 dark:text-white">
                         {info.summary.user_messages}
                       </div>
-                      <div className="text-gray-500 dark:text-gray-400">用户消息</div>
+                      <div className="text-gray-500 dark:text-gray-400">User Messages</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg font-medium text-gray-900 dark:text-white">
                         {info.summary.assistant_messages}
                       </div>
-                      <div className="text-gray-500 dark:text-gray-400">助手回复</div>
+                      <div className="text-gray-500 dark:text-gray-400">Assistant Replies</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg font-medium text-gray-900 dark:text-white">
                         {info.summary.has_system_prompt ? '✓' : '✗'}
                       </div>
-                      <div className="text-gray-500 dark:text-gray-400">系统提示</div>
+                      <div className="text-gray-500 dark:text-gray-400">System Prompt</div>
                     </div>
                   </div>
                 </div>
@@ -249,7 +249,7 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
         })}
       </div>
 
-      {/* 说明信息 */}
+      {/* Instructions */}
       <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
         <div className="flex items-start gap-3">
           <div className="text-blue-500 dark:text-blue-400 mt-0.5">
@@ -259,14 +259,14 @@ export default function ConversationHistoryTab({ projectId }: ConversationHistor
           </div>
           <div>
             <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
-              多轮对话功能说明
+              Multi-turn Conversation Features
             </h4>
             <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-              <p>• <strong>多轮对话</strong>：国产AI模型现已支持多轮对话，会记住之前的对话内容</p>
-              <p>• <strong>自动管理</strong>：系统会自动管理对话历史长度，超出上下文窗口时会智能截断</p>
-              <p>• <strong>独立会话</strong>：每个AI模型的对话历史独立管理，互不影响</p>
-              <p>• <strong>清空重置</strong>：清空对话历史后，下次对话将开始新的会话</p>
-              <p>• <strong>系统提示</strong>：每个模型都有专门的系统提示，优化代码生成效果</p>
+              <p>• <strong>Multi-turn Conversations</strong>: Domestic AI models now support multi-turn conversations and will remember previous conversation content</p>
+              <p>• <strong>Automatic Management</strong>: The system automatically manages conversation history length and intelligently truncates when exceeding the context window</p>
+              <p>• <strong>Independent Sessions</strong>: Each AI model's conversation history is managed independently without affecting each other</p>
+              <p>• <strong>Clear and Reset</strong>: After clearing conversation history, the next conversation will start a new session</p>
+              <p>• <strong>System Prompts</strong>: Each model has a dedicated system prompt to optimize code generation results</p>
             </div>
           </div>
         </div>

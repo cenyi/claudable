@@ -1,6 +1,6 @@
 """
 AI Model Adapters Package
-支持多种国产和国际AI大模型的统一适配器
+Unified adapter supporting multiple domestic and international AI models
 """
 
 from .base_adapter import (
@@ -15,7 +15,7 @@ from .base_adapter import (
     get_provider_models
 )
 
-# 导入所有适配器实现，触发自动注册
+# Import all adapter implementations to trigger automatic registration
 from .deepseek_adapter import DeepSeekAdapter
 from .qwen_adapter import QwenAdapter
 from .kimi_adapter import KimiAdapter

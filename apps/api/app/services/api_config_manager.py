@@ -1,6 +1,6 @@
 """
 API Configuration Manager
-管理国产AI大模型的API配置和密钥
+Manage API configuration and keys for domestic AI models
 """
 import os
 import json
@@ -15,22 +15,22 @@ from app.services.adapters import ModelProvider, get_provider_models, get_model_
 
 
 class APIConfigManager:
-    """API配置管理器"""
+    """API Configuration Manager"""
     
     def __init__(self, db: Session):
         self.db = db
         self.config_cache = {}
     
     def get_api_key(self, provider: ModelProvider, project_id: Optional[str] = None) -> Optional[str]:
-        """获取API密钥"""
+        """Get API key"""
         
-        # 首先从项目环境变量中查找
+        # First look in project environment variables
         if project_id:
             project_key = self._get_project_api_key(provider, project_id)
             if project_key:
                 return project_key
         
-        # 然后从全局环境变量中查找
+        # Then look in global environment variables
         return self._get_global_api_key(provider)
     
     def set_api_key(
@@ -40,7 +40,7 @@ class APIConfigManager:
         project_id: Optional[str] = None,
         scope: str = "global"
     ) -> bool:
-        """设置API密钥"""
+        """Set API key"""
         
         try:
             if project_id and scope == "project":
@@ -52,17 +52,17 @@ class APIConfigManager:
             return False
     
     def validate_api_key(self, provider: ModelProvider, api_key: str) -> bool:
-        """验证API密钥是否有效"""
+        """Validate if the API key is valid"""
         
         try:
             models = get_provider_models(provider)
             if not models:
                 return False
             
-            # 使用第一个模型的配置进行验证
+            # Use the first model's configuration for validation
             model_config = models[0]
             
-            # 创建适配器进行验证
+            # Create adapter for validation
             from app.services.adapters import AdapterFactory
             
             async def async_validate():
@@ -78,7 +78,7 @@ class APIConfigManager:
             return False
     
     def get_provider_config(self, provider: ModelProvider) -> Dict[str, Any]:
-        """获取提供商配置"""
+        """Get provider configuration"""
         
         models = get_provider_models(provider)
         api_key = self.get_api_key(provider)
@@ -100,7 +100,7 @@ class APIConfigManager:
         }
     
     def get_all_providers_config(self, project_id: Optional[str] = None) -> Dict[str, Any]:
-        """获取所有提供商的配置"""
+        """Get configuration for all providers"""
         
         providers_config = {}
         
@@ -110,9 +110,9 @@ class APIConfigManager:
         return providers_config
     
     def _get_project_api_key(self, provider: ModelProvider, project_id: str) -> Optional[str]:
-        """从项目环境变量中获取API密钥"""
+        """Get API key from project environment variables"""
         
-        # 获取对应的环境变量名
+        # Get the corresponding environment variable name
         models = get_provider_models(provider)
         if not models:
             return None
@@ -120,14 +120,14 @@ class APIConfigManager:
         env_key = models[0].api_key_env
         
         try:
-            # 从数据库中查找项目环境变量
+            # Find project environment variable from database
             env_var = self.db.query(EnvVar).filter(
                 EnvVar.project_id == project_id,
                 EnvVar.key == env_key
             ).first()
             
             if env_var:
-                # 解密环境变量值
+                # Decrypt environment variable value
                 return secret_box.decrypt(env_var.value_encrypted)
             
         except Exception as e:
@@ -136,7 +136,7 @@ class APIConfigManager:
         return None
     
     def _get_global_api_key(self, provider: ModelProvider) -> Optional[str]:
-        """从全局环境变量中获取API密钥"""
+        """Get API key from global environment variables"""
         
         models = get_provider_models(provider)
         if not models:
@@ -146,7 +146,7 @@ class APIConfigManager:
         return os.getenv(env_key)
     
     def _set_project_api_key(self, provider: ModelProvider, api_key: str, project_id: str) -> bool:
-        """设置项目环境变量中的API密钥"""
+        """Set API key in project environment variables"""
         
         models = get_provider_models(provider)
         if not models:
@@ -155,17 +155,17 @@ class APIConfigManager:
         env_key = models[0].api_key_env
         
         try:
-            # 查找或创建环境变量
+            # Find or create environment variable
             env_var = self.db.query(EnvVar).filter(
                 EnvVar.project_id == project_id,
                 EnvVar.key == env_key
             ).first()
             
             if env_var:
-                # 更新现有环境变量
+                # Update existing environment variable
                 env_var.value_encrypted = secret_box.encrypt(api_key)
             else:
-                # 创建新环境变量
+                # Create new environment variable
                 import uuid
                 env_var = EnvVar(
                     id=str(uuid.uuid4()),
@@ -188,7 +188,7 @@ class APIConfigManager:
             return False
     
     def _set_global_api_key(self, provider: ModelProvider, api_key: str) -> bool:
-        """设置全局环境变量中的API密钥"""
+        """Set API key in global environment variables"""
         
         models = get_provider_models(provider)
         if not models:
@@ -197,53 +197,4 @@ class APIConfigManager:
         env_key = models[0].api_key_env
         
         try:
-            # 写入操作系统环境变量（仅在当前进程中有效）
-            os.environ[env_key] = api_key
-            
-            # 可选：写入.env文件以持久化
-            env_file_path = Path(settings.projects_root).parent / ".env"
-            self._update_env_file(env_file_path, env_key, api_key)
-            
-            return True
-            
-        except Exception as e:
-            print(f"Error setting global API key for {provider.value}: {e}")
-            return False
-    
-    def _update_env_file(self, env_file_path: Path, key: str, value: str):
-        """更新.env文件"""
-        
-        try:
-            # 读取现有内容
-            lines = []
-            if env_file_path.exists():
-                with open(env_file_path, 'r', encoding='utf-8') as f:
-                    lines = f.readlines()
-            
-            # 查找并更新现有的键
-            key_found = False
-            new_lines = []
-            
-            for line in lines:
-                if line.strip().startswith(f"{key}="):
-                    new_lines.append(f"{key}={value}\n")
-                    key_found = True
-                else:
-                    new_lines.append(line)
-            
-            # 如果键不存在，添加新行
-            if not key_found:
-                new_lines.append(f"{key}={value}\n")
-            
-            # 写回文件
-            env_file_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(env_file_path, 'w', encoding='utf-8') as f:
-                f.writelines(new_lines)
-                
-        except Exception as e:
-            print(f"Error updating .env file: {e}")
-
-
-def get_config_manager(db: Session) -> APIConfigManager:
-    """获取API配置管理器实例"""
-    return APIConfigManager(db)
+            # Write to OS environment variable (only valid in current process)

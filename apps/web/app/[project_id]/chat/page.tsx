@@ -1215,7 +1215,7 @@ export default function ChatPage({ params }: Params) {
       `}</style>
 
       <div className="h-screen bg-white dark:bg-black flex relative overflow-hidden">
-        {/* 会话连续性管理器 */}
+        {/* Session Continuity Manager */}
         <SessionContinuityManager
           projectId={projectId}
           onSessionRestore={(sessionInfo) => {
@@ -1224,7 +1224,7 @@ export default function ChatPage({ params }: Params) {
             setShowConversationMonitor(true);
           }}
           onConversationLoaded={(hasConversation) => {
-            // 如果有对话，自动显示监控面板
+            // Automatically show monitoring panel if there is a conversation
             if (hasConversation) {
               setShowConversationMonitor(true);
             }
@@ -1232,12 +1232,12 @@ export default function ChatPage({ params }: Params) {
         />
         
         <div className="h-full w-full flex">
-          {/* 왼쪽: 채팅창 */}
+          {/* Left: Chat Window */}
           <div
             style={{ width: '30%' }}
             className="h-full border-r border-gray-200 dark:border-gray-800 flex flex-col"
           >
-            {/* 채팅 헤더 */}
+            {/* Chat Header */}
             <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 p-4 h-[73px] flex items-center">
               <div className="flex items-center gap-3">
                 <button 
@@ -1260,19 +1260,19 @@ export default function ChatPage({ params }: Params) {
               </div>
             </div>
             
-            {/* 채팅 로그 영역 */}
+            {/* Chat Log Area */}
             <div className="flex-1 min-h-0 flex flex-col">
               <ChatLog 
                 projectId={projectId} 
                 onSessionStatusChange={(isRunningValue) => {
                   console.log('🔍 [DEBUG] Session status change:', isRunningValue);
                   setIsRunning(isRunningValue);
-                  // Agent 작업 완료 상태 추적 및 자동 preview 시작
+                  // Track agent task completion status and automatically start preview
                   if (!isRunningValue && hasInitialPrompt && !agentWorkComplete && !previewUrl) {
                     setAgentWorkComplete(true);
                     // Save to localStorage
                     localStorage.setItem(`project_${projectId}_taskComplete`, 'true');
-                    // Initial prompt 작업 완료 후 자동으로 preview 서버 시작
+                    // Automatically start preview server after initial prompt task completion
                     start();
                   }
                 }}
@@ -1281,7 +1281,7 @@ export default function ChatPage({ params }: Params) {
                 completeRequest={completeRequest}
               />
               
-              {/* 대화监控 컴포넌트 */}
+              {/* Conversation Monitoring Component */}
               {showConversationMonitor && (
                 <ConversationMonitor
                   projectId={projectId}
@@ -1291,9 +1291,9 @@ export default function ChatPage({ params }: Params) {
               )}
             </div>
             
-            {/* 간단한 입력 영역 */}
+            {/* Simple Input Area */}
             <div className="p-4 rounded-bl-2xl space-y-3">
-              {/* 对话状态指示器 */}
+              {/* Conversation Status Indicator */}
               <ConversationStatusIndicator
                 projectId={projectId}
                 activeProvider={preferredCli}
@@ -1316,14 +1316,14 @@ export default function ChatPage({ params }: Params) {
             </div>
           </div>
 
-          {/* 오른쪽: Preview/Code 영역 */}
+          {/* Right: Preview/Code Area */}
           <div className="h-full flex flex-col bg-black" style={{ width: '70%' }}>
-            {/* 컨텐츠 영역 */}
+            {/* Content Area */}
             <div className="flex-1 min-h-0 flex flex-col">
               {/* Controls Bar */}
               <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 h-[73px] flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  {/* 토글 스위치 */}
+                  {/* Toggle Switch */}
                   <div className="flex items-center bg-gray-100 dark:bg-gray-900 rounded-lg p-1">
                     <button
                       className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
@@ -1468,7 +1468,6 @@ export default function ChatPage({ params }: Params) {
                             <p className="text-xs text-red-600 dark:text-red-300">There was an error during deployment. Please try again.</p>
                           </div>
                         )}
-                        
                         <div className="space-y-4">
                           {!githubConnected || !vercelConnected ? (
                             <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">

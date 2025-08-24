@@ -1,6 +1,6 @@
 """
-Qwen (通义千问) API Adapter
-支持阿里云通义千问系列模型的API适配器
+Qwen API Adapter
+API adapter supporting Alibaba Cloud Qwen series models
 """
 import json
 import uuid
@@ -11,18 +11,18 @@ from .base_adapter import BaseAPIAdapter, ModelProvider, ModelConfig, APIMessage
 
 
 class QwenAdapter(BaseAPIAdapter):
-    """通义千问API适配器"""
+    """Qwen API Adapter"""
     
     def __init__(self, config: ModelConfig, api_key: str):
         super().__init__(config, api_key)
         self.base_url = config.api_endpoint or "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
     
     async def validate_api_key(self) -> bool:
-        """验证API密钥是否有效"""
+        """Validate if the API key is valid"""
         try:
-            # 发送一个简单的测试请求
+            # Send a simple test request
             test_messages = [
-                APIMessage(role="user", content="你好")
+                APIMessage(role="user", content="Hello")
             ]
             
             payload = self._prepare_request_payload(
@@ -41,8 +41,8 @@ class QwenAdapter(BaseAPIAdapter):
             return False
     
     async def get_available_models(self) -> List[str]:
-        """获取可用的模型列表"""
-        # 通义千问没有专门的模型列表API，返回预定义的模型
+        """Get list of available models"""
+        # Qwen does not have a dedicated model list API, return predefined models
         return [
             "qwen-max",
             "qwen-plus", 
@@ -59,7 +59,7 @@ class QwenAdapter(BaseAPIAdapter):
         max_tokens: Optional[int] = None,
         stream: bool = False
     ) -> AsyncGenerator[APIResponse, None]:
-        """聊天补全，支持流式响应"""
+        """Chat completion with streaming support"""
         
         payload = self._prepare_request_payload(
             messages=messages,
@@ -86,7 +86,7 @@ class QwenAdapter(BaseAPIAdapter):
             yield error_response
     
     async def _single_completion(self, payload: Dict[str, Any]) -> APIResponse:
-        """非流式补全"""
+        """Non-streaming completion"""
         response = await self._make_request(
             "POST",
             self.base_url,
@@ -98,8 +98,8 @@ class QwenAdapter(BaseAPIAdapter):
         return self._parse_response(data)
     
     async def _stream_completion(self, payload: Dict[str, Any]) -> AsyncGenerator[APIResponse, None]:
-        """流式补全"""
-        # 启用流式输出
+        """Streaming completion"""
+        # Enable streaming output
         payload["parameters"]["incremental_output"] = True
         
         async with self.client.stream(
@@ -127,9 +127,9 @@ class QwenAdapter(BaseAPIAdapter):
         model: Optional[str] = None,
         **kwargs
     ) -> Dict[str, Any]:
-        """准备API请求载荷"""
+        """Prepare API request payload"""
         
-        # 转换消息格式为通义千问格式
+        # Convert message format to Qwen format
         formatted_messages = []
         for msg in messages:
             formatted_msg = {
@@ -138,7 +138,7 @@ class QwenAdapter(BaseAPIAdapter):
             }
             formatted_messages.append(formatted_msg)
         
-        # 通义千问的请求格式
+        # Qwen request format
         payload = {
             "model": model or self.config.model_id,
             "input": {
@@ -152,7 +152,7 @@ class QwenAdapter(BaseAPIAdapter):
             }
         }
         
-        # 流式输出配置
+        # Streaming output configuration
         if kwargs.get("stream", False):
             payload["parameters"]["stream"] = True
             payload["parameters"]["incremental_output"] = True
@@ -160,7 +160,7 @@ class QwenAdapter(BaseAPIAdapter):
         return payload
     
     def _parse_response(self, response_data: Dict[str, Any]) -> APIResponse:
-        """解析API响应"""
+        """Parse API response"""
         output = response_data.get("output", {})
         
         if "choices" in output and len(output["choices"]) > 0:
@@ -170,7 +170,7 @@ class QwenAdapter(BaseAPIAdapter):
             content = message.get("content", "")
             finish_reason = choice.get("finish_reason", "stop")
         else:
-            # 处理其他格式的响应
+            # Handle other response formats
             content = output.get("text", "")
             finish_reason = output.get("finish_reason", "stop")
         
@@ -184,7 +184,7 @@ class QwenAdapter(BaseAPIAdapter):
         )
     
     def _parse_stream_chunk(self, chunk: str) -> Optional[APIResponse]:
-        """解析流式响应块"""
+        """Parse streaming response chunk"""
         try:
             data = json.loads(chunk)
             
@@ -204,7 +204,7 @@ class QwenAdapter(BaseAPIAdapter):
                         model=data.get("model")
                     )
             elif "text" in output:
-                # 处理其他格式的流式响应
+                # Handle other streaming response formats
                 content = output.get("text", "")
                 if content:
                     return APIResponse(
@@ -220,15 +220,15 @@ class QwenAdapter(BaseAPIAdapter):
             return None
     
     def _get_headers(self) -> Dict[str, str]:
-        """获取请求头"""
+        """Get request headers"""
         return {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
             "User-Agent": "Claudable/1.0.0",
-            "X-DashScope-SSE": "enable"  # 启用SSE流式输出
+            "X-DashScope-SSE": "enable"  # Enable SSE streaming output
         }
 
 
-# 注册Qwen适配器
+# Register Qwen adapter
 from .base_adapter import AdapterFactory
 AdapterFactory.register_adapter(ModelProvider.QWEN, QwenAdapter)

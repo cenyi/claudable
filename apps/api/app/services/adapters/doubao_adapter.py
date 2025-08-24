@@ -1,6 +1,6 @@
 """
-Doubao (豆包) API Adapter
-支持字节跳动豆包系列模型的API适配器
+Doubao API Adapter
+API adapter supporting ByteDance Doubao series models
 """
 import json
 import uuid
@@ -11,18 +11,18 @@ from .base_adapter import BaseAPIAdapter, ModelProvider, ModelConfig, APIMessage
 
 
 class DoubaoAdapter(BaseAPIAdapter):
-    """豆包API适配器"""
+    """Doubao API Adapter"""
     
     def __init__(self, config: ModelConfig, api_key: str):
         super().__init__(config, api_key)
         self.base_url = config.api_endpoint or "https://ark.cn-beijing.volces.com/api/v3"
     
     async def validate_api_key(self) -> bool:
-        """验证API密钥是否有效"""
+        """Validate if the API key is valid"""
         try:
-            # 发送一个简单的测试请求
+            # Send a simple test request
             test_messages = [
-                APIMessage(role="user", content="你好")
+                APIMessage(role="user", content="Hello")
             ]
             
             payload = self._prepare_request_payload(
@@ -42,10 +42,10 @@ class DoubaoAdapter(BaseAPIAdapter):
             return False
     
     async def get_available_models(self) -> List[str]:
-        """获取可用的模型列表"""
-        # 豆包使用endpoint ID作为模型标识，返回常见的endpoint
+        """Get list of available models"""
+        # Doubao uses endpoint ID as model identifier, return common endpoints
         return [
-            "ep-20241224053255-w6rj2",  # 示例endpoint
+            "ep-20241224053255-w6rj2",  # Example endpoint
             "doubao-pro-4k",
             "doubao-pro-32k", 
             "doubao-pro-128k",
@@ -60,7 +60,7 @@ class DoubaoAdapter(BaseAPIAdapter):
         max_tokens: Optional[int] = None,
         stream: bool = False
     ) -> AsyncGenerator[APIResponse, None]:
-        """聊天补全，支持流式响应"""
+        """Chat completion with streaming support"""
         
         payload = self._prepare_request_payload(
             messages=messages,
@@ -87,7 +87,7 @@ class DoubaoAdapter(BaseAPIAdapter):
             yield error_response
     
     async def _single_completion(self, payload: Dict[str, Any]) -> APIResponse:
-        """非流式补全"""
+        """Non-streaming completion"""
         response = await self._make_request(
             "POST",
             f"{self.base_url}/chat/completions",
@@ -99,7 +99,7 @@ class DoubaoAdapter(BaseAPIAdapter):
         return self._parse_response(data)
     
     async def _stream_completion(self, payload: Dict[str, Any]) -> AsyncGenerator[APIResponse, None]:
-        """流式补全"""
+        """Streaming completion"""
         async with self.client.stream(
             "POST",
             f"{self.base_url}/chat/completions",
@@ -127,9 +127,9 @@ class DoubaoAdapter(BaseAPIAdapter):
         model: Optional[str] = None,
         **kwargs
     ) -> Dict[str, Any]:
-        """准备API请求载荷"""
+        """Prepare API request payload"""
         
-        # 转换消息格式
+        # Convert message format
         formatted_messages = []
         for msg in messages:
             formatted_msg = {
@@ -150,7 +150,7 @@ class DoubaoAdapter(BaseAPIAdapter):
         return payload
     
     def _parse_response(self, response_data: Dict[str, Any]) -> APIResponse:
-        """解析API响应"""
+        """Parse API response"""
         choice = response_data["choices"][0]
         message = choice["message"]
         
@@ -164,7 +164,7 @@ class DoubaoAdapter(BaseAPIAdapter):
         )
     
     def _parse_stream_chunk(self, chunk: str) -> Optional[APIResponse]:
-        """解析流式响应块"""
+        """Parse streaming response chunk"""
         try:
             data = json.loads(chunk)
             
@@ -187,7 +187,7 @@ class DoubaoAdapter(BaseAPIAdapter):
             return None
     
     def _get_headers(self) -> Dict[str, str]:
-        """获取请求头"""
+        """Get request headers"""
         return {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
@@ -195,6 +195,6 @@ class DoubaoAdapter(BaseAPIAdapter):
         }
 
 
-# 注册豆包适配器
+# Register Doubao adapter
 from .base_adapter import AdapterFactory
 AdapterFactory.register_adapter(ModelProvider.DOUBAO, DoubaoAdapter)
