@@ -52,51 +52,68 @@ const CLI_OPTIONS: CLIOption[] = [
     features: ['IDE integration', 'Frontier models', 'Real-time coding']
   },
   {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    icon: '🔍',
+    description: '深度求索代码模型，专业代码生成',
+    color: 'from-blue-500 to-indigo-600',
+    checkCommand: 'API模式，无需安装CLI',
+    downloadUrl: 'https://api.deepseek.com',
+    installCommand: '设置DEEPSEEK_API_KEY环境变量',
+    models: [
+      { id: 'deepseek-coder', name: 'DeepSeek Coder', description: '专业代码生成模型' },
+      { id: 'deepseek-chat', name: 'DeepSeek Chat', description: '通用对话模型' }
+    ],
+    features: ['代码生成', 'API调用', '高性价比']
+  },
+  {
     id: 'qwen',
-    name: 'Qwen Code',
+    name: 'Qwen',
     icon: '🐉',
-    description: 'Alibaba Qwen with agentic coding',
+    description: '阿里云通义千问，强大的中文理解',
     color: 'from-red-500 to-pink-600',
-    checkCommand: 'qwen --version',
-    downloadUrl: 'https://github.com/QwenLM/qwen-code',
-    installCommand: 'npm install -g @qwen-code/qwen-code',
+    checkCommand: 'API模式，无需安装CLI',
+    downloadUrl: 'https://dashscope.aliyuncs.com',
+    installCommand: '设置QWEN_API_KEY环境变量',
     models: [
-      { id: 'qwen3-coder-480b-a35b', name: 'Qwen3-Coder 480B-A35B', description: 'Most agentic coding model with 1M context' },
-      { id: 'qwen2.5-coder-32b', name: 'Qwen2.5-Coder 32B', description: 'SOTA open-source coding model' },
+      { id: 'qwen-max', name: '通义千问-Max', description: '最强大的通用模型' },
+      { id: 'qwen-plus', name: '通义千问-Plus', description: '平衡性能和成本' },
+      { id: 'qwen2.5-coder-32b-instruct', name: '通义千问-Coder', description: '专业代码生成' }
     ],
-    features: ['Agentic coding', '1M context window', 'Apache 2.0 license']
+    features: ['中文优化', '多模态', '代码生成']
   },
   {
-    id: 'gemini',
-    name: 'Gemini CLI',
-    icon: '💎',
-    description: 'Google Gemini with thinking capabilities',
-    color: 'from-[#DE7356] to-[#e88a6f]',
-    checkCommand: 'gemini -v',
-    downloadUrl: 'https://github.com/google-gemini/gemini-cli',
-    installCommand: 'npm install -g @google/generative-ai-cli',
+    id: 'kimi',
+    name: 'Kimi',
+    icon: '🌙',
+    description: '月之暗面Kimi，超长上下文窗口',
+    color: 'from-purple-500 to-violet-600',
+    checkCommand: 'API模式，无需安装CLI',
+    downloadUrl: 'https://api.moonshot.cn',
+    installCommand: '设置KIMI_API_KEY环境变量',
     models: [
-      { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', description: 'State-of-the-art thinking model with adaptive reasoning' },
-      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', description: 'Fast and versatile multimodal model' },
+      { id: 'moonshot-v1-8k', name: 'Kimi K2 8K', description: '8K上下文窗口' },
+      { id: 'moonshot-v1-32k', name: 'Kimi K2 32K', description: '32K上下文窗口' },
+      { id: 'moonshot-v1-128k', name: 'Kimi K2 128K', description: '128K上下文窗口' }
     ],
-    features: ['Adaptive thinking', 'Web search', '1M context window']
+    features: ['超长上下文', '中文优化', '文档理解']
   },
   {
-    id: 'codex',
-    name: 'Codex CLI',
-    icon: '🔮',
-    description: 'OpenAI Codex with GPT-5 integration',
+    id: 'doubao',
+    name: 'Doubao',
+    icon: '🫘',
+    description: '字节跳动豆包，高效智能助手',
     color: 'from-green-500 to-teal-600',
-    checkCommand: 'codex --version',
-    downloadUrl: 'https://github.com/openai/codex',
-    installCommand: 'npm install -g openai-codex-cli',
+    checkCommand: 'API模式，无需安装CLI',
+    downloadUrl: 'https://www.volcengine.com/product/doubao',
+    installCommand: '设置DOUBAO_API_KEY环境变量',
     models: [
-      { id: 'gpt-5', name: 'GPT-5', description: 'Smartest coding model with built-in thinking' },
-      { id: 'gpt-4.1', name: 'GPT-4.1', description: 'Major improvements in coding and long-context' },
-      { id: 'o3-mini', name: 'OpenAI o3-mini', description: 'Cost-efficient reasoning model for coding, math, and science' },
+      { id: 'ep-20241224053255-w6rj2', name: '豆包 Seed', description: '豆包基础模型' },
+      { id: 'doubao-pro-4k', name: '豆包 Pro 4K', description: '4K上下文窗口' },
+      { id: 'doubao-pro-32k', name: '豆包 Pro 32K', description: '32K上下文窗口' }
     ],
-    features: ['Built-in thinking', '1M context tokens', 'Open-source CLI']
-  }
+    features: ['高效推理', '中文优化', '多场景应用']
+  },
 ];
 
 interface ProjectSettingsProps {
@@ -167,10 +184,11 @@ export default function ProjectSettings({ isOpen, onClose, projectId, projectNam
     fallback_enabled: true,
     cli_settings: {
       claude: { model: 'claude-sonnet-4-20250514', enabled: true },
-      cursor: { model: 'cursor-smart', enabled: true },
-      qwen: { model: 'qwen3-coder-plus', enabled: true },
-      gemini: { model: 'gemini-2.5-pro', enabled: true },
-      codex: { model: 'gpt-4-turbo', enabled: true },
+      cursor: { model: 'gpt-5', enabled: true },
+      deepseek: { model: 'deepseek-coder', enabled: true },
+      qwen: { model: 'qwen-max', enabled: true },
+      kimi: { model: 'moonshot-v1-32k', enabled: true },
+      doubao: { model: 'ep-20241224053255-w6rj2', enabled: true },
     }
   });
   const [cliStatus, setCLIStatus] = useState<CLIStatus>({});
@@ -267,9 +285,10 @@ export default function ProjectSettings({ isOpen, onClose, projectId, projectNam
           cli_settings: {
             claude: { model: 'claude-opus-4.1', enabled: true },
             cursor: { model: 'gpt-5', enabled: false },
-            qwen: { model: 'qwen3-coder-480b-a35b', enabled: false },
-            gemini: { model: 'gemini-2.5-pro', enabled: false },
-            codex: { model: 'gpt-5', enabled: false }
+            deepseek: { model: 'deepseek-coder', enabled: true },
+            qwen: { model: 'qwen-max', enabled: true },
+            kimi: { model: 'moonshot-v1-32k', enabled: true },
+            doubao: { model: 'ep-20241224053255-w6rj2', enabled: true }
           }
         });
       }
@@ -282,9 +301,10 @@ export default function ProjectSettings({ isOpen, onClose, projectId, projectNam
         cli_settings: {
           claude: { model: 'claude-opus-4.1', enabled: true },
           cursor: { model: 'gpt-5', enabled: false },
-          qwen: { model: 'qwen3-coder-480b', enabled: false },
-          gemini: { model: 'gemini-2.5-pro', enabled: false },
-          codex: { model: 'gpt-5', enabled: false }
+          deepseek: { model: 'deepseek-coder', enabled: true },
+          qwen: { model: 'qwen-max', enabled: true },
+          kimi: { model: 'moonshot-v1-32k', enabled: true },
+          doubao: { model: 'ep-20241224053255-w6rj2', enabled: true }
         }
       });
     }

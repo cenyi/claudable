@@ -65,45 +65,55 @@ export const CLI_OPTIONS: CLIOption[] = [
     ]
   },
   {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    description: '深度求索代码模型',
+    available: true,
+    configured: false,
+    enabled: true,
+    models: [
+      { id: 'deepseek-coder', name: 'DeepSeek Coder', description: '专业代码生成模型' },
+      { id: 'deepseek-chat', name: 'DeepSeek Chat', description: '通用对话模型' }
+    ]
+  },
+  {
     id: 'qwen',
     name: 'Qwen',
-    description: '(Coming Soon)',
+    description: '阿里云通义千问',
     available: true,
     configured: false,
-    enabled: false,
+    enabled: true,
     models: [
-      { id: 'qwen3-coder-480b-a35b', name: 'Qwen3-Coder 480B-A35B' },
-      { id: 'qwen2.5-coder-32b', name: 'Qwen2.5-Coder 32B' },
-      { id: 'qwen-max', name: 'Qwen Max' },
-      { id: 'qwen-plus', name: 'Qwen Plus' }
+      { id: 'qwen-max', name: '通义千问-Max', description: '最强大的通用模型' },
+      { id: 'qwen-plus', name: '通义千问-Plus', description: '平衡性能和成本' },
+      { id: 'qwen2.5-coder-32b-instruct', name: '通义千问-Coder', description: '专业代码生成' },
+      { id: 'qwen-turbo', name: '通义千问-Turbo', description: '快速响应模型' }
     ]
   },
   {
-    id: 'gemini',
-    name: 'Gemini',
-    description: '(Coming Soon)',
+    id: 'kimi',
+    name: 'Kimi',
+    description: '月之暗面Kimi模型',
     available: true,
     configured: false,
-    enabled: false,
+    enabled: true,
     models: [
-      { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
-      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
-      { id: 'gemini-pro', name: 'Gemini Pro' },
-      { id: 'gemini-ultra', name: 'Gemini Ultra' }
+      { id: 'moonshot-v1-8k', name: 'Kimi K2 8K', description: '8K上下文窗口' },
+      { id: 'moonshot-v1-32k', name: 'Kimi K2 32K', description: '32K上下文窗口' },
+      { id: 'moonshot-v1-128k', name: 'Kimi K2 128K', description: '128K上下文窗口' }
     ]
   },
   {
-    id: 'codex',
-    name: 'Codex',
-    description: '(Coming Soon)',
+    id: 'doubao',
+    name: 'Doubao',
+    description: '字节跳动豆包模型',
     available: true,
     configured: false,
-    enabled: false,
+    enabled: true,
     models: [
-      { id: 'gpt-5', name: 'GPT-5' },
-      { id: 'gpt-4.1', name: 'GPT-4.1' },
-      { id: 'o3-mini', name: 'OpenAI o3-mini' },
-      { id: 'code-davinci-002', name: 'Code Davinci 002' }
+      { id: 'ep-20241224053255-w6rj2', name: '豆包 Seed', description: '豆包基础模型' },
+      { id: 'doubao-pro-4k', name: '豆包 Pro 4K', description: '4K上下文窗口' },
+      { id: 'doubao-pro-32k', name: '豆包 Pro 32K', description: '32K上下文窗口' }
     ]
-  }
+  },
 ];

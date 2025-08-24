@@ -11,6 +11,9 @@ import ChatLog from '../../../components/ChatLog';
 import { ProjectSettings } from '../../../components/settings/ProjectSettings';
 import ChatInput from '../../../components/chat/ChatInput';
 import { useUserRequests } from '../../../hooks/useUserRequests';
+import SessionContinuityManager from '../../../components/SessionContinuityManager';
+import ConversationMonitor from '../../../components/ConversationMonitor';
+import ConversationStatusIndicator from '../../../components/ConversationStatusIndicator';
 
 // 더 이상 ProjectSettings을 로드하지 않음 (메인 페이지에서 글로벌 설정으로 관리)
 
@@ -177,6 +180,8 @@ export default function ChatPage({ params }: Params) {
   const [previewInitializationMessage, setPreviewInitializationMessage] = useState('Starting development server...');
   const [preferredCli, setPreferredCli] = useState<string>('claude');
   const [thinkingMode, setThinkingMode] = useState<boolean>(false);
+  const [sessionRestored, setSessionRestored] = useState<boolean>(false);
+  const [showConversationMonitor, setShowConversationMonitor] = useState<boolean>(false);
 
   // Guarded trigger that can be called from multiple places safely
   const triggerInitialPromptIfNeeded = useCallback(() => {
@@ -1210,6 +1215,22 @@ export default function ChatPage({ params }: Params) {
       `}</style>
 
       <div className="h-screen bg-white dark:bg-black flex relative overflow-hidden">
+        {/* 会话连续性管理器 */}
+        <SessionContinuityManager
+          projectId={projectId}
+          onSessionRestore={(sessionInfo) => {
+            console.log('🔄 Session restored:', sessionInfo);
+            setSessionRestored(true);
+            setShowConversationMonitor(true);
+          }}
+          onConversationLoaded={(hasConversation) => {
+            // 如果有对话，自动显示监控面板
+            if (hasConversation) {
+              setShowConversationMonitor(true);
+            }
+          }}
+        />
+        
         <div className="h-full w-full flex">
           {/* 왼쪽: 채팅창 */}
           <div
@@ -1240,7 +1261,7 @@ export default function ChatPage({ params }: Params) {
             </div>
             
             {/* 채팅 로그 영역 */}
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 flex flex-col">
               <ChatLog 
                 projectId={projectId} 
                 onSessionStatusChange={(isRunningValue) => {
@@ -1259,10 +1280,26 @@ export default function ChatPage({ params }: Params) {
                 startRequest={startRequest}
                 completeRequest={completeRequest}
               />
+              
+              {/* 대화监控 컴포넌트 */}
+              {showConversationMonitor && (
+                <ConversationMonitor
+                  projectId={projectId}
+                  activeProvider={preferredCli}
+                  className="border-t border-gray-200 dark:border-gray-700"
+                />
+              )}
             </div>
             
             {/* 간단한 입력 영역 */}
-            <div className="p-4 rounded-bl-2xl">
+            <div className="p-4 rounded-bl-2xl space-y-3">
+              {/* 对话状态指示器 */}
+              <ConversationStatusIndicator
+                projectId={projectId}
+                activeProvider={preferredCli}
+                className="justify-center"
+              />
+              
               <ChatInput 
                 onSendMessage={(message) => {
                   runAct(message);

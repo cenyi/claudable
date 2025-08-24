@@ -16,7 +16,9 @@
     "setup": "npm install",
     "clean": "node scripts/clean.js",
     "db:reset": "node scripts/reset-db.js",
-    "db:backup": "node scripts/backup-db.js"
+    "db:backup": "node scripts/backup-db.js",
+    "setup:ai-keys": "node scripts/setup-ai-keys.js",
+    "test:ai-integration": "python scripts/test-ai-integration.py"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

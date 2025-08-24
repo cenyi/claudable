@@ -73,6 +73,27 @@ MODEL_MAPPING = {
         "claude-opus-4.1": "opus-4.1",
         "claude-sonnet-4-20250514": "sonnet-4",
         "claude-opus-4-1-20250805": "opus-4.1"
+    },
+    "deepseek": {
+        "deepseek-coder": "deepseek-coder",
+        "deepseek-chat": "deepseek-chat"
+    },
+    "qwen": {
+        "qwen-max": "qwen-max",
+        "qwen-plus": "qwen-plus",
+        "qwen2.5-coder-32b-instruct": "qwen2.5-coder-32b-instruct",
+        "qwen-turbo": "qwen-turbo"
+    },
+    "kimi": {
+        "moonshot-v1-8k": "moonshot-v1-8k",
+        "moonshot-v1-32k": "moonshot-v1-32k",
+        "moonshot-v1-128k": "moonshot-v1-128k"
+    },
+    "doubao": {
+        "ep-20241224053255-w6rj2": "ep-20241224053255-w6rj2",
+        "doubao-pro-4k": "doubao-pro-4k",
+        "doubao-pro-32k": "doubao-pro-32k",
+        "doubao-pro-128k": "doubao-pro-128k"
     }
 }
 
@@ -80,6 +101,10 @@ MODEL_MAPPING = {
 class CLIType(str, Enum):
     CLAUDE = "claude"
     CURSOR = "cursor"
+    DEEPSEEK = "deepseek"
+    QWEN = "qwen"
+    KIMI = "kimi"
+    DOUBAO = "doubao"
 
 
 class BaseCLI(ABC):
@@ -1325,9 +1350,16 @@ class UnifiedCLIManager:
         self.db = db
         
         # Initialize CLI adapters with database session
+        from .api_adapter_cli import APIAdapterCLI
+        from app.services.adapters import ModelProvider
+        
         self.cli_adapters = {
             CLIType.CLAUDE: ClaudeCodeCLI(),  # Use SDK implementation if available
-            CLIType.CURSOR: CursorAgentCLI(db_session=db)
+            CLIType.CURSOR: CursorAgentCLI(db_session=db),
+            CLIType.DEEPSEEK: APIAdapterCLI(ModelProvider.DEEPSEEK),
+            CLIType.QWEN: APIAdapterCLI(ModelProvider.QWEN),
+            CLIType.KIMI: APIAdapterCLI(ModelProvider.KIMI),
+            CLIType.DOUBAO: APIAdapterCLI(ModelProvider.DOUBAO)
         }
     
     async def execute_instruction(

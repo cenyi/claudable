@@ -12,6 +12,8 @@ from app.api.settings import router as settings_router
 from app.api.project_services import router as project_services_router
 from app.api.github import router as github_router
 from app.api.vercel import router as vercel_router
+from app.api.api_config import router as api_config_router
+from app.api.conversation import router as conversation_router
 from app.core.logging import configure_logging
 from app.core.terminal_ui import ui
 from sqlalchemy import inspect
@@ -64,6 +66,8 @@ app.include_router(settings_router)  # Settings API
 app.include_router(project_services_router)  # Project services API
 app.include_router(github_router)  # GitHub integration API
 app.include_router(vercel_router)  # Vercel integration API
+app.include_router(api_config_router)  # API configuration for national AI models
+app.include_router(conversation_router)  # Conversation management for multi-turn chat
 
 
 @app.get("/health")
